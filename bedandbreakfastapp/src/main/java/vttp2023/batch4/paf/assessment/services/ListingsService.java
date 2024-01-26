@@ -1,14 +1,18 @@
 package vttp2023.batch4.paf.assessment.services;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import vttp2023.batch4.paf.assessment.models.Accommodation;
 import vttp2023.batch4.paf.assessment.models.AccommodationSummary;
 import vttp2023.batch4.paf.assessment.models.Bookings;
+import vttp2023.batch4.paf.assessment.models.User;
+import vttp2023.batch4.paf.assessment.repositories.BookingsRepository;
 import vttp2023.batch4.paf.assessment.repositories.ListingsRepository;
 
 @Service
@@ -21,6 +25,9 @@ public class ListingsService {
 
 	@Autowired
 	private ForexService forexSvc;
+
+	@Autowired
+	private BookingsRepository bookingsRepo;
 	
 	// IMPORTANT: DO NOT MODIFY THIS METHOD.
 	// If this method is changed, any assessment task relying on this method will
@@ -56,7 +63,21 @@ public class ListingsService {
 	// TODO: Task 6 
 	// IMPORTANT: DO NOT MODIFY THE SIGNATURE OF THIS METHOD.
 	// You may only add annotations and throw exceptions to this method
-	public void createBooking(Bookings booking) {
+	@Transactional(rollbackFor = SQLException.class)
+	public void createBooking(Bookings booking) throws SQLException {
+		// Check if user exists in 'users' table
+		Optional<User> optUser = bookingsRepo.userExists(booking.getEmail());
+		User user;
+		// if doesnt exist, add to users table
+		if (optUser.isEmpty()) {
+			user = new User(booking.getEmail(), booking.getName());
+			bookingsRepo.newUser(user);	
+		} else {
+			user = optUser.get();
+		}
+
+		// add booking to 'bookings' table
+		bookingsRepo.newBookings(booking);
 	}
 
 }

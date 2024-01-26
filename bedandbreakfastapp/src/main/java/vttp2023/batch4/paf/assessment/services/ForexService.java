@@ -24,7 +24,7 @@ public class ForexService {
 			.queryParam("to", to)
 			.build()
 			.toString();
-		System.out.println(endpoint);
+		// System.out.println(endpoint);
 
 		RestTemplate template = new RestTemplate();
 		ResponseEntity<String> resp = template.getForEntity(endpoint, String.class);
@@ -33,7 +33,7 @@ public class ForexService {
 		}
 		JsonReader reader = Json.createReader(new StringReader(resp.getBody()));
 		JsonObject object = reader.readObject().getJsonObject("rates");
-		System.out.println(object.getJsonNumber("SGD").doubleValue());
+		// System.out.println(object.getJsonNumber("SGD").doubleValue());
 		float rates = (float) object.getJsonNumber("SGD").doubleValue();
 		return rates;
 	}

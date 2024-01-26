@@ -15,13 +15,15 @@ public class BookingsRepository {
 	
 	// You may add additional dependency injections
 
-	public static final String SQL_SELECT_USER_BY_EMAIL = "select * from users where email like %";
+	public static final String SQL_SELECT_USER_BY_EMAIL = "select * from users where email like ?";
 
 	@Autowired
 	private JdbcTemplate template;
 
 	// You may use this method in your task
 	public Optional<User> userExists(String email) {
+		System.out.println("Check user exists");
+		System.out.println(email);
 		SqlRowSet rs = template.queryForRowSet(SQL_SELECT_USER_BY_EMAIL, email);
 		if (!rs.next())
 			return Optional.empty();
@@ -33,11 +35,25 @@ public class BookingsRepository {
 	// IMPORTANT: DO NOT MODIFY THE SIGNATURE OF THIS METHOD.
 	// You may only add throw exceptions to this method
 	public void newUser(User user) {
+		System.out.println("Adding user to SQL 'user'");
+		String query = """
+				INSERT INTO users VALUES (?, ?)
+				""";
+		template.update(query, user.email(), user.name());
 	}
 
 	// TODO: Task 6
 	// IMPORTANT: DO NOT MODIFY THE SIGNATURE OF THIS METHOD.
 	// You may only add throw exceptions to this method
 	public void newBookings(Bookings bookings) {
+		System.out.println("Adding booking to SQL 'bookings'");
+		String query = """
+				INSERT INTO bookings VALUES (?, ?, ?, ?)
+				""";
+		template.update(query,
+			bookings.getBookingId(),
+			bookings.getListingId(),
+			bookings.getDuration(),
+			bookings.getEmail());
 	}
 }
