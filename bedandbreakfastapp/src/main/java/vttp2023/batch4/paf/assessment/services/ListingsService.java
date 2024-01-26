@@ -70,9 +70,11 @@ public class ListingsService {
 		User user;
 		// if doesnt exist, add to users table
 		if (optUser.isEmpty()) {
+			System.out.println("User doesn't exist");
 			user = new User(booking.getEmail(), booking.getName());
 			bookingsRepo.newUser(user);	
 		} else {
+			System.out.println("User exists");
 			user = optUser.get();
 		}
 

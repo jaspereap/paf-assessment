@@ -116,7 +116,5 @@ public class BnBController {
 			JsonObject resp = Json.createObjectBuilder().add("message", e.getMessage()).build();
 			return ResponseEntity.status(500).body(resp.toString());
 		}
-
-		return null;
 	}
 }
