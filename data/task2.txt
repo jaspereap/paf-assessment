@@ -1,6 +1,6 @@
 Write your Task 2 answers in this file
 
-mongoimport --uri=mongodb+srv://root:root1@cluster0.rt6iztp.mongodb.net/?retryWrites=true&w=majority --file=data/task2.txt -d=bedandbreakfast -c=listings_and_reviews --type=json
+mongoimport --uri=mongodb+srv://root:root1@cluster0.rt6iztp.mongodb.net/?retryWrites=true&w=majority --file=data/listings.json -d=bedandbreakfast -c=listings_and_reviews --type=json
 
 // Task 2.2
 db.listings_and_reviews.aggregate([
@@ -20,6 +20,14 @@ db.listings.aggregate([
             "reviewer_name": { $replaceAll: { input: "$reviewer_name", find: ",", replacement: ""} }, 
             "comments": { $replaceAll: { input: "$comments", find: "\n", replacement: ""} } } 
     },
+    { $project:
+        { _id: 0 , 
+            "_id": 1, 
+            "date": 1, 
+            "listing_id": 1, 
+            "reviewer_name": 1, 
+            "comments": { $replaceAll: { input: "$comments", find: "\r", replacement: ""} } } 
+    },
     { $out: 'reviews' }
 ])
 
@@ -27,4 +35,4 @@ db.listings.aggregate([
 db.listings.updateMany({}, {$unset: {"reviews": 1 }})
 
 // Task 2.5
-mongoexport --uri="mongodb+srv://root:root1@cluster0.rt6iztp.mongodb.net/?appName=mongosh+2.1.1" --db=bedandbreakfast --collection=reviews --fields date,listing_id,reviewer_name,comments | sed '/"_id":/s/"_id":[^,]*,//' > /Users/jaspereap/Desktop/paf-assessment/data/reviews.csv
+mongoexport --uri="mongodb+srv://root:root1@cluster0.rt6iztp.mongodb.net/?appName=mongosh+2.1.1" --db=bedandbreakfast --collection=reviews --type=csv --fields date,listing_id,reviewer_name,comments | sed '/"_id":/s/"_id":[^,]*,//' > /Users/jaspereap/Desktop/paf-assessment/data/reviews.csv
