@@ -19,7 +19,7 @@ create table bookings (
 );
 
 create table reviews (
-    id int not null,
+    id int not null auto_increment,
     date timestamp not null,
     listing_id varchar(20) not null,
     reviewer_name varchar(64) not null,

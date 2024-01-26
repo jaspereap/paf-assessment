@@ -25,3 +25,6 @@ db.listings.aggregate([
 
 // Task 2.4
 db.listings.updateMany({}, {$unset: {"reviews": 1 }})
+
+// Task 2.5
+mongoexport --uri="mongodb+srv://root:root1@cluster0.rt6iztp.mongodb.net/?appName=mongosh+2.1.1" --db=bedandbreakfast --collection=reviews --fields date,listing_id,reviewer_name,comments | sed '/"_id":/s/"_id":[^,]*,//' > /Users/jaspereap/Desktop/paf-assessment/data/reviews.csv

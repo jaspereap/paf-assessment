@@ -1,11 +1,16 @@
 package vttp2023.batch4.paf.assessment.repositories;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.GroupOperation;
+import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
@@ -26,11 +31,23 @@ public class ListingsRepository {
 	 * Write the native MongoDB query that you will be using for this method
 	 * inside this comment block
 	 * eg. db.bffs.find({ name: 'fred }) 
-	 *
+	db.listings.aggregate(
+		{ $match: {"address.country" : { $regex: "Australia", $options: "i"}} },
+		{ $group: { _id: "$address.suburb"} }
+	)
 	 *
 	 */
 	public List<String> getSuburbs(String country) {
-		return null;
+		System.out.println("Getting suburbs..");
+		Criteria criteria = Criteria.where("address.country").regex(country, "i");
+		MatchOperation match = Aggregation.match(criteria);
+		GroupOperation group = Aggregation.group("address.suburb");
+		Aggregation pipeline = Aggregation.newAggregation(match, group);
+
+		AggregationResults<String> results = template.aggregate(pipeline, "listings", String.class);
+		List<String> listString = results.getMappedResults();
+
+		return listString;
 	}
 
 	/*
