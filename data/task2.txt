@@ -1,1 +1,27 @@
 Write your Task 2 answers in this file
+
+mongoimport --uri=mongodb+srv://root:root1@cluster0.rt6iztp.mongodb.net/?retryWrites=true&w=majority --file=data/task2.txt -d=bedandbreakfast -c=listings_and_reviews --type=json
+
+// Task 2.2
+db.listings_and_reviews.aggregate([
+   {$match: {"address.country" : { $regex: "Australia", $options: "i"} }},
+   {$out: 'listings'}
+])
+
+// Task 2.3
+db.listings.aggregate([
+    { $unwind: "$reviews" },
+    { $set: {_id: "$reviews._id", date : "$reviews.date", listing_id: "$reviews.listing_id", reviewer_name: "$reviews.reviewer_name", comments:"$reviews.comments"}},
+    { $project:
+        { _id: 0 , 
+            "_id": 1, 
+            "date": 1, 
+            "listing_id": 1, 
+            "reviewer_name": { $replaceAll: { input: "$reviewer_name", find: ",", replacement: ""} }, 
+            "comments": { $replaceAll: { input: "$comments", find: "\n", replacement: ""} } } 
+    },
+    { $out: 'reviews' }
+])
+
+// Task 2.4
+db.listings.updateMany({}, {$unset: {"reviews": 1 }})
