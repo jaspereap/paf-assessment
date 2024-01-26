@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -48,6 +49,11 @@ public class ListingsRepository {
 		List<Document> listDoc = results.getMappedResults();
 		List<String> returnResult = new LinkedList<>();
 		for (Document d : listDoc) {
+			String suburb = d.getString("_id");
+			if (suburb.isBlank()) {
+				continue;
+			}
+			// System.out.println(suburb);
 			returnResult.add(d.getString("_id"));
 		}
 		return returnResult;
@@ -73,20 +79,24 @@ public class ListingsRepository {
 	 *
 	 */
 	public List<AccommodationSummary> findListings(String suburb, int persons, int duration, float priceRange) {
-		List<AccommodationSummary> listSummary = new LinkedList<>();
+		System.out.println("Finding listings based on search.. ");
 		Criteria criteria = Criteria
-			.where("suburb").is(suburb)
+			.where("address.suburb").regex(suburb, "i")
 			.and("price").lte(priceRange)
 			.and("accommodates").gte(persons)
-			.and("min_nights").lte(duration)
-			;
-		Query query = Query.query(criteria);
-		List<Document> results = template.find(query, Document.class);
+			.and("min_nights").lte(duration);
+		Query query = Query.query(criteria)
+			.with(Sort.by(Sort.Direction.DESC, "price"));
+		List<Document> results = template.find(query, Document.class, "listings");
+		System.out.println("Results: " + results);
+
+		List<AccommodationSummary> listSummary = new LinkedList<>();
 		for (Document d : results) {
 			String id = d.getString("_id");
 			String name = d.getString("name");
 			Integer accommodates = d.getInteger("accommodates");
-			float price = d.get("price", Float.class);
+			float price = d.get("price", Number.class).floatValue();
+			System.out.println(id+name+accommodates+price);
 			AccommodationSummary summary = new AccommodationSummary();
 			summary.setId(id);
 			summary.setName(name);
