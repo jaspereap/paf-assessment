@@ -105,7 +105,7 @@ public class BnBController {
 		bookings.setEmail(email);
 		bookings.setDuration(nights);
 		bookings.setListingId(id);
-		System.out.println("Email: " + email + "Name: " + name);
+		// System.out.println("Email: " + email + "Name: " + name);
 
 		try {
 			listingsSvc.createBooking(bookings);

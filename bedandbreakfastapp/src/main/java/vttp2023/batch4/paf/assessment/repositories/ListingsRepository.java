@@ -39,7 +39,7 @@ public class ListingsRepository {
 	 *
 	 */
 	public List<String> getSuburbs(String country) {
-		System.out.println("Getting suburbs..");
+		// System.out.println("Getting suburbs..");
 		Criteria criteria = Criteria.where("address.country").regex(country, "i");
 		MatchOperation match = Aggregation.match(criteria);
 		GroupOperation group = Aggregation.group("address.suburb");
@@ -79,7 +79,7 @@ public class ListingsRepository {
 	 *
 	 */
 	public List<AccommodationSummary> findListings(String suburb, int persons, int duration, float priceRange) {
-		System.out.println("Finding listings based on search.. ");
+		// System.out.println("Finding listings based on search.. ");
 		Criteria criteria = Criteria
 			.where("address.suburb").regex(suburb, "i")
 			.and("price").lte(priceRange)
@@ -88,7 +88,7 @@ public class ListingsRepository {
 		Query query = Query.query(criteria)
 			.with(Sort.by(Sort.Direction.DESC, "price"));
 		List<Document> results = template.find(query, Document.class, "listings");
-		System.out.println("Results: " + results);
+		// System.out.println("Results: " + results);
 
 		List<AccommodationSummary> listSummary = new LinkedList<>();
 		for (Document d : results) {
@@ -96,7 +96,7 @@ public class ListingsRepository {
 			String name = d.getString("name");
 			Integer accommodates = d.getInteger("accommodates");
 			float price = d.get("price", Number.class).floatValue();
-			System.out.println(id+name+accommodates+price);
+			// System.out.println(id+name+accommodates+price);
 			AccommodationSummary summary = new AccommodationSummary();
 			summary.setId(id);
 			summary.setName(name);

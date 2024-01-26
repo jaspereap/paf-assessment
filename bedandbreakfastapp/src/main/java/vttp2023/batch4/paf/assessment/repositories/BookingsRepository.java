@@ -24,8 +24,8 @@ public class BookingsRepository {
 
 	// You may use this method in your task
 	public Optional<User> userExists(String email) {
-		System.out.println("Check user exists");
-		System.out.println(email);
+		// System.out.println("Check user exists");
+		// System.out.println(email);
 		SqlRowSet rs = template.queryForRowSet(SQL_SELECT_USER_BY_EMAIL, email);
 		if (!rs.next())
 			return Optional.empty();
@@ -37,13 +37,13 @@ public class BookingsRepository {
 	// IMPORTANT: DO NOT MODIFY THE SIGNATURE OF THIS METHOD.
 	// You may only add throw exceptions to this method
 	public void newUser(User user) throws SQLException {
-		System.out.println("Adding user to SQL 'user'");
+		// System.out.println("Adding user to SQL 'user'");
 		String query = """
 				INSERT INTO users VALUES (?, ?)
 				""";
 		int updated = template.update(query, user.email(), user.name());
 		if (!(updated > 0)) {
-			throw new SQLException("Failed to add user");
+			throw new SQLException("Failed to add user to 'user'");
 		}
 	}
 
@@ -51,7 +51,7 @@ public class BookingsRepository {
 	// IMPORTANT: DO NOT MODIFY THE SIGNATURE OF THIS METHOD.
 	// You may only add throw exceptions to this method
 	public void newBookings(Bookings bookings) throws SQLException {
-		System.out.println("Adding booking to SQL 'bookings'");
+		// System.out.println("Adding booking to SQL 'bookings'");
 		String query = """
 				INSERT INTO bookings VALUES (?, ?, ?, ?)
 				""";
@@ -61,7 +61,7 @@ public class BookingsRepository {
 						bookings.getDuration(),
 						bookings.getEmail());
 		if (!(updated > 0)) {
-			throw new SQLException("Failed to add user");
+			throw new SQLException("Failed to add booking to 'bookings'");
 		}
 	}
 }
