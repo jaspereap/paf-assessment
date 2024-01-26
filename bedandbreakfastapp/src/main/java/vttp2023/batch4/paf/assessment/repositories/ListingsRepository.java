@@ -44,21 +44,57 @@ public class ListingsRepository {
 		GroupOperation group = Aggregation.group("address.suburb");
 		Aggregation pipeline = Aggregation.newAggregation(match, group);
 
-		AggregationResults<String> results = template.aggregate(pipeline, "listings", String.class);
-		List<String> listString = results.getMappedResults();
-
-		return listString;
+		AggregationResults<Document> results = template.aggregate(pipeline, "listings", Document.class);
+		List<Document> listDoc = results.getMappedResults();
+		List<String> returnResult = new LinkedList<>();
+		for (Document d : listDoc) {
+			returnResult.add(d.getString("_id"));
+		}
+		return returnResult;
 	}
 
 	/*
 	 * Write the native MongoDB query that you will be using for this method
 	 * inside this comment block
 	 * eg. db.bffs.find({ name: 'fred }) 
+	db.listings.find(
+		{
+			"address.suburb" : "Bondi",
+			price: { $lte: 100 },
+			accommodates: { $gte: 2},
+			min_nights: { $lte: 3}
+		}
+	).sort(
+		{
+			"price": -1
+		}
+	)
 	 *
 	 *
 	 */
 	public List<AccommodationSummary> findListings(String suburb, int persons, int duration, float priceRange) {
-		return null;
+		List<AccommodationSummary> listSummary = new LinkedList<>();
+		Criteria criteria = Criteria
+			.where("suburb").is(suburb)
+			.and("price").lte(priceRange)
+			.and("accommodates").gte(persons)
+			.and("min_nights").lte(duration)
+			;
+		Query query = Query.query(criteria);
+		List<Document> results = template.find(query, Document.class);
+		for (Document d : results) {
+			String id = d.getString("_id");
+			String name = d.getString("name");
+			Integer accommodates = d.getInteger("accommodates");
+			float price = d.get("price", Float.class);
+			AccommodationSummary summary = new AccommodationSummary();
+			summary.setId(id);
+			summary.setName(name);
+			summary.setAccomodates(accommodates);
+			summary.setPrice(price);
+			listSummary.add(summary);
+		}
+		return listSummary;
 	}
 
 	// IMPORTANT: DO NOT MODIFY THIS METHOD UNLESS REQUESTED TO DO SO
