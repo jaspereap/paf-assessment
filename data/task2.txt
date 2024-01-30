@@ -1,7 +1,7 @@
 Write your Task 2 answers in this file
 
 // Task 2.1
-mongoimport --uri=mongodb+srv://root:root1@cluster0.rt6iztp.mongodb.net/?retryWrites=true&w=majority --file=data/listings.json -d=bedandbreakfast -c=listings_and_reviews --type=json
+mongoimport --uri=mongodb+srv://<user>:<password>@cluster0.rt6iztp.mongodb.net/?retryWrites=true&w=majority --file=data/listings.json -d=bedandbreakfast -c=listings_and_reviews --type=json
 
 // Task 2.2
 db.listings_and_reviews.aggregate([
@@ -39,4 +39,4 @@ db.listings.aggregate([
 db.listings.updateMany({}, {$unset: {"reviews": 1 }})
 
 // Task 2.5
-mongoexport --uri="mongodb+srv://root:root1@cluster0.rt6iztp.mongodb.net/?appName=mongosh+2.1.1" --db=bedandbreakfast --collection=reviews --type=csv --fields date,listing_id,reviewer_name,comments | sed '/"_id":/s/"_id":[^,]*,//' > /Users/jaspereap/Desktop/paf-assessment/data/reviews.csv
+mongoexport --uri="mongodb+srv://<user>:<password>@cluster0.rt6iztp.mongodb.net/?appName=mongosh+2.1.1" --db=bedandbreakfast --collection=reviews --type=csv --fields date,listing_id,reviewer_name,comments | sed '/"_id":/s/"_id":[^,]*,//' > /Users/jaspereap/Desktop/paf-assessment/data/reviews.csv
